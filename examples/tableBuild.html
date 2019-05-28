@@ -1,0 +1,92 @@
+<!--
+layui-table，动态生成未知列
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>动态生成表格</title>
+    <link rel="stylesheet" href="../src/css/layui.css">
+<body>
+<table id="demoBuild" class="layui-table"></table>
+<script src="../src/layui.js" charset="utf-8"></script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        /*demo数据*/
+        var dataDemo = [{
+            'field01': 'field01-value01'
+            ,'field02': 'field02-value02'
+            , 'appendcolmap': {
+                'field03': {
+                    'title': '动态列01'
+                    , 'checked': 'checked'
+                }
+                , 'field04': {
+                    'title': '动态列02'
+                    , 'checked': ''
+                }
+                , 'field05': {
+                    'title': '动态列03'
+                    , 'checked': 'checked'
+                }
+            }
+        }, {
+            'field01': 'field01-value02'
+            ,'field02': 'field02-value02'
+            , 'appendcolmap': {
+                'field03': {
+                    'title': '动态列01'
+                    , 'checked': 'checked'
+                }
+                , 'field04': {
+                    'title': '动态列02'
+                    , 'checked': ''
+                }
+                , 'field05': {
+                    'title': '动态列03'
+                    , 'checked': ''
+                }
+            }
+        }];
+        /*首行数据-用于生成表头*/
+        var firstR=dataDemo[0];
+        /*表头固定部分*/
+        var headerFixed=[{field:'field01',title:'Fixed01'},{field:'field02',title:'Fixed02'}];
+        /*动态添加的部分表头-暂存变量*/
+        var appendHeaderMap=[];
+        /*动态生成表头*/
+        for(var d in firstR.appendcolmap){
+            console.log(d+":"+firstR.appendcolmap[d].title+" "+firstR.appendcolmap[d].checked);
+            /*勾选状态值*/
+            var checked = ' {{d.appendcolmap[\''+d+'\'].checked}} ';
+            /**
+             * 1;input必须包在div 中，否则无法显示
+             * 2;填充数据的field值，必须是小写字母，大写字母会被强转成小写
+             * @type {{field: string, title: *, templet: string}}
+             */
+            var tmp={
+               field: d
+                ,title:firstR.appendcolmap[d].title
+                 ,templet:'<div>'+ '<input type="checkbox" '+checked+' lay-skin="primary"/>'+'</div>'
+            }
+            /*表头动态部分添加*/
+            appendHeaderMap.push(tmp);
+        }
+        /*固定部分表头与动态生成部分的表头合并*/
+        var tableHeader = headerFixed.concat(appendHeaderMap);
+        /*渲染*/
+        table.render({
+            elem:'#demoBuild'
+            ,cols:[tableHeader]
+            ,data:dataDemo
+        });
+        // 数据重载（不生成表头，只加载数据）
+        table.reload('demoBuild',{
+            data:dataDemo
+        });
+    });
+</script>
+</body>
+</html>
